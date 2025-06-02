@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../App';
 import { scanImage, recognizeText } from '../lib/ocr/mlkit';
 import { processTextract } from '../lib/ocr/textract';
 import { ReceiptItem } from '../models/types';

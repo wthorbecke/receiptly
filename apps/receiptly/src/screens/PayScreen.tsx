@@ -2,9 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Linking } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../App';
 import { buildVenmoURL, openVenmoPaymentByPhone } from '../lib/payments/venmo';
 import { createCashAppLink, createCashAppPhoneLink } from '../lib/payments/cashapp';
+import { saveReceipt } from '../lib/storage';
 
 type PayScreenRouteProp = RouteProp<RootStackParamList, 'Pay'>;
 type PayScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Pay'>;

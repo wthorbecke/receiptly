@@ -1,62 +1,99 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { CameraView, Camera } from 'expo-camera';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { RootStackParamList } from '../App';
 
-type CameraScreenProps = {
+type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Camera'>;
 };
 
-export default function CameraScreen({ navigation }: CameraScreenProps) {
+export default function CameraScreen({ navigation }: Props) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [camera, setCamera] = useState<Camera | null>(null);
+  const isFocused = useIsFocused();
+  const cameraRef = useRef<CameraView>(null);
+
+  const requestPermissions = async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    setHasPermission(status === 'granted');
+  };
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
+    requestPermissions();
   }, []);
 
+  // Handle camera preview pause/resume
+  useFocusEffect(
+    useCallback(() => {
+      cameraRef.current?.resumePreview?.();
+      return () => cameraRef.current?.pausePreview?.();
+    }, [])
+  );
+
   const takePicture = async () => {
-    if (camera) {
-      const photo = await camera.takePictureAsync({
-        quality: 0.8,
-        base64: true,
-      });
-      navigation.navigate('Parse', { imageUri: photo.uri });
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+          base64: true,
+        });
+        navigation.navigate('Parse', { imageUri: photo.uri });
+      } catch (error) {
+        console.error('Error taking picture:', error);
+      }
     }
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.8,
-      base64: true,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+        base64: true,
+      });
 
-    if (!result.canceled) {
-      navigation.navigate('Parse', { imageUri: result.assets[0].uri });
+      if (!result.canceled) {
+        navigation.navigate('Parse', { imageUri: result.assets[0].uri });
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
     }
   };
 
   if (hasPermission === null) {
-    return <View />;
+    return <View style={styles.placeholder} />;
   }
+
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>No access to camera</Text>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={requestPermissions}
+        >
+          <Text style={styles.text}>Grant Permission</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Don't render camera when screen is not focused
+  if (!isFocused) {
+    return <View style={styles.placeholder} />;
   }
 
   return (
     <View style={styles.container}>
-      <Camera
-        ref={ref => setCamera(ref)}
-        style={styles.camera}
-        type={CameraType.back}
-      >
+      <CameraView
+        ref={cameraRef}
+        style={StyleSheet.absoluteFill}
+        facing="back"
+      />
+      <View style={styles.overlay}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
@@ -77,7 +114,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
             <Text style={styles.text}>History</Text>
           </TouchableOpacity>
         </View>
-      </Camera>
+      </View>
     </View>
   );
 }
@@ -86,8 +123,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  camera: {
+  placeholder: {
     flex: 1,
+    backgroundColor: 'black',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
   },
   buttonContainer: {
     flex: 1,

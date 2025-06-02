@@ -14,10 +14,11 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Contacts from 'expo-contacts';
 import { Swipeable } from 'react-native-gesture-handler';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../App';
 import { ReceiptItem, Contact } from '../models/types';
 import PersonChip from '../components/PersonChip';
 import { calcTotals } from '../lib/split/calc';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 
 type AssignScreenRouteProp = RouteProp<RootStackParamList, 'Assign'>;
 type AssignScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Assign'>;
