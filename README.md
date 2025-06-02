@@ -12,6 +12,16 @@ A React Native + Expo app for scanning receipts, extracting line items via OCR, 
 - 💸 Send payments via Venmo or Cash App
 - 📊 View receipt history (optional)
 
+## Project Structure
+
+This is a monorepo using npm workspaces:
+```
+receiptly/
+├── apps/
+│   └── receiptly/    # Main React Native app
+└── packages/         # Shared packages (future use)
+```
+
 ## Setup
 
 1. Clone the repository:
@@ -20,14 +30,23 @@ git clone https://github.com/yourusername/receiptly.git
 cd receiptly
 ```
 
-2. Install dependencies:
+2. Install dependencies at the root level:
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory with your API keys:
+3. Create a `.env` file in `apps/receiptly/` directory with your API keys:
+```bash
+cd apps/receiptly
+cp env.example .env
 ```
-# AWS Credentials for Textract
+
+Then edit `.env` with your actual keys:
+```
+# Google Cloud Vision API (for OCR text recognition)
+EXPO_PUBLIC_GOOGLE_VISION_API_KEY=your_google_cloud_vision_api_key_here
+
+# AWS Credentials for Textract (fallback OCR)
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_REGION=us-east-1
@@ -37,7 +56,14 @@ CASH_APP_CLIENT_ID=your_client_id
 CASH_APP_API_KEY=your_api_key
 ```
 
-4. Start the development server:
+4. For iOS development (macOS only):
+```bash
+cd apps/receiptly/ios
+pod install
+cd ../../..
+```
+
+5. Start the development server:
 ```bash
 npm start
 ```
@@ -46,24 +72,41 @@ npm start
 
 | Variable | Description | Required |
 |----------|-------------|----------|
+| EXPO_PUBLIC_GOOGLE_VISION_API_KEY | Google Cloud Vision API key for primary OCR | Yes |
 | AWS_ACCESS_KEY_ID | AWS IAM user access key with Textract permissions | Yes |
 | AWS_SECRET_ACCESS_KEY | AWS IAM user secret key | Yes |
 | AWS_REGION | AWS region (default: us-east-1) | No |
 | CASH_APP_CLIENT_ID | Cash App Pay API client ID | No |
 | CASH_APP_API_KEY | Cash App Pay API key | No |
 
-## Testing
+## Available Scripts
+
+From the root directory:
 
 ```bash
+# Start the Expo development server
+npm start
+
+# Run on Android
+npm run android
+
+# Run on iOS
+npm run ios
+
 # Run unit tests
 npm test
 
 # Run linter
 npm run lint
 
-# Run type checking
+# Run TypeScript type checking
 npm run typecheck
+
+# Format code
+npm run format
 ```
+
+Note: TypeScript checking is done automatically by the TypeScript compiler during development.
 
 ## TODO / Stretch Goals
 

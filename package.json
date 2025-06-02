@@ -12,6 +12,7 @@
     "web": "cd apps/receiptly && expo start --web",
     "test": "jest",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "devDependencies": {
