@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Receiptly",
+    "slug": "receiptly",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "main": "index.js",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.receiptly"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "io.receiptly"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-contacts",
+      "expo-image-picker",
+      [
+        "expo-file-system",
+        {
+          "photosPermission": "Allow Receiptly to access your photos to save receipts."
+        }
+      ]
+    ]
+  }
+}
